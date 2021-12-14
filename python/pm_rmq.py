@@ -33,13 +33,13 @@ def query_naive(arr, solutions, start, end):
     if (start == end):
         return start
 
-    largest_pow = math.floor(math.log(end - start + 1, 2))
+    largest_pow = math.floor(math.log(end - start, 2))
     if (largest_pow == math.log(end - start + 1, 2)):
         return solutions[start, largest_pow]
     else:
         interval_size = 2 ** largest_pow
         start_1 = start
-        start_2 = end - interval_size + 1
+        start_2 = end - interval_size
 
         interval_1_argmin = solutions[start_1, largest_pow]
         interval_2_argmin = solutions[start_2, largest_pow]
@@ -62,7 +62,7 @@ def test_method_1():
     for i in range(len(arr)):
         for j in range(i + 1, len(arr)):
             expected = i + np.argmin(arr[i:j])
-            actual = query_naive(arr, soln, i, j-1)
+            actual = query_naive(arr, soln, i, j)
             assert(expected == actual)
     print("All tests passed!")
 
@@ -72,10 +72,9 @@ def test_method_1():
 
 # Input:  numpy array
 # Output: (chunk_size, num_chunks, top_array, bottom_array)
-#         where top_array[i] is the argmin of ith chunk
-#         and   bottom_array[i] is a view of a numpy array `l`
-#               such that l[start, end] is the argmin of the 
-#               values between `start' and `end' in the ith chunk
+#         where top_array[i] is the minimum element of i-th chunk
+#         and   bottom_array[i] is the position of the minimum element 
+#               inside the i-th chunk
 def pm_rmq_preprocess(arr):
     arr = np.array(arr)
 
@@ -108,7 +107,7 @@ def pm_rmq_preprocess(arr):
         chunk_summaries[i] = arr[start_chunk + np.argmin(chunk)]
         bottom_lookup.append(lookup[tuple(chunk_sequence)])
 
-    # 4) Preprocess "top" array with O(n log n) space approach
+    # 4) Preprocess "top" array with O(n log n) space approach -> 2n - (2n/log_2(n) * log_2(2n/log_2(n))) > 0 from n = 4
     top_preprocessing = sparse_table(chunk_summaries)
 
     return (arr, chunk_summaries, top_preprocessing, bottom_lookup)

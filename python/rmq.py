@@ -3,6 +3,7 @@ import random
 from lca import lca_preprocessing, lca_query, Node, binary_tree_to_arr
 
 def arr_to_cartesian(arr, to_add = 0):
+    # RMQ -> LCA : O(n)
     if len(arr) == 0:
         return None, []
 

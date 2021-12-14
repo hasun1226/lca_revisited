@@ -10,7 +10,7 @@ class Node:
 ### Least Common Ancestor ###
 
 def lca_preprocessing(root):
-    # E, L, R arrays made
+    # E, L, R arrays made (LCA -> RMQ)
     depth_arr, node_arr = binary_tree_to_arr(root)
     preprocessed_pm_arr = pm_rmq_preprocess(depth_arr)
     return (preprocessed_pm_arr, depth_arr, node_arr)
