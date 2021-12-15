@@ -49,22 +49,30 @@ def binary_tree_to_arr(root):
     euler_tour(root, 0, depth_arr, node_arr)
     return depth_arr, node_arr
 
+# Single traversal of Binary tree, without extra storage for path arrays
 def lca_recursive(root, n1, n2):
     # Base Case
     if root is None:
         return None
  
-    # If both n1 and n2 are smaller than root, then LCA
-    # lies in left
-    if(root.data > n1 and root.data > n2):
-        return lca(root.left, n1, n2)
+    # If either n1 or n2 matches with root's key, report
+    #  the presence by returning root (Note that if a key is
+    #  ancestor of other, then the ancestor key becomes LCA
+    if root.data == n1 or root.data == n2:
+        return root
  
-    # If both n1 and n2 are greater than root, then LCA
-    # lies in right
-    if(root.data < n1 and root.data < n2):
-        return lca(root.right, n1, n2)
+    # Look for keys in left and right subtrees
+    left_lca = lca_recursive(root.left, n1, n2)
+    right_lca = lca_recursive(root.right, n1, n2)
  
-    return root
+    # If both of the above calls return Non-NULL, then one key
+    # is present in once subtree and other is present in other,
+    # So this node is the LCA
+    if left_lca and right_lca:
+        return root
+ 
+    # Otherwise check if left subtree or right subtree is LCA
+    return left_lca if left_lca is not None else right_lca
 
 if __name__ == '__main__':
     # Example tree from L15
@@ -79,10 +87,10 @@ if __name__ == '__main__':
     a.left = b
     b.left = c
     a.right = d
-    d.left = e
+    d.right = e
     e.left = f
     e.right = g
-    d.right = h
+    d.left = h
 
     preprocessed_tree = lca_preprocessing(a)
     print(preprocessed_tree)
@@ -91,5 +99,8 @@ if __name__ == '__main__':
     print("LCA of {} and {}".format(h.data, c.data))
     print("    {}".format(node.data))
 
+    time1 = time.time_ns()
     r = lca_recursive(a, 1, 22)
+    time2 = time.time_ns()
     print("LCA of 1 and 22 is {}".format(r.data))
+    print(time2-time1)
