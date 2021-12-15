@@ -1,3 +1,4 @@
+import time
 from pm_rmq import pm_rmq_query, pm_rmq_preprocess
 
 class Node:
@@ -48,16 +49,33 @@ def binary_tree_to_arr(root):
     euler_tour(root, 0, depth_arr, node_arr)
     return depth_arr, node_arr
 
+def lca_recursive(root, n1, n2):
+    # Base Case
+    if root is None:
+        return None
+ 
+    # If both n1 and n2 are smaller than root, then LCA
+    # lies in left
+    if(root.data > n1 and root.data > n2):
+        return lca(root.left, n1, n2)
+ 
+    # If both n1 and n2 are greater than root, then LCA
+    # lies in right
+    if(root.data < n1 and root.data < n2):
+        return lca(root.right, n1, n2)
+ 
+    return root
+
 if __name__ == '__main__':
     # Example tree from L15
-    a = Node('0-root')
-    b = Node('1-left')
-    c = Node('2-left-left')
-    d = Node('1-right')
-    e = Node('2-right-left')
-    f = Node('3-left')
-    g = Node('3-right')
-    h = Node('2-right-right')
+    a = Node(20)
+    b = Node(8)
+    c = Node(22)
+    d = Node(4)
+    e = Node(12)
+    f = Node(10)
+    g = Node(14)
+    h = Node(1)
     a.left = b
     b.left = c
     a.right = d
@@ -73,3 +91,5 @@ if __name__ == '__main__':
     print("LCA of {} and {}".format(h.data, c.data))
     print("    {}".format(node.data))
 
+    r = lca_recursive(a, 1, 22)
+    print("LCA of 1 and 22 is {}".format(r.data))
