@@ -82,15 +82,15 @@ def pm_rmq_preprocess(arr):
     chunk_size = math.floor(1/2 * math.log(len(arr), 2))
     num_chunks = math.ceil(len(arr)/chunk_size)
 
-    # 2) Construct full lookup table
-    #    * Enumerate all possible 2^{chunk_size} +- sqeuences
+    # 2) Construct full lookup table of O(sqrt(n)) normalized blocks
+    #    Enumerate all possible 2^{chunk_size} +- sqeuences
     lookup = np.zeros(shape = ((2, ) * (chunk_size - 1)) + (chunk_size, chunk_size + 1), dtype = int)
     for step_sequence in itertools.product([0,1], repeat = chunk_size - 1):
         sequence = np.zeros(shape = (chunk_size, ), dtype = int)
         for i in range(1, chunk_size):
             sequence[i] = sequence[i - 1] + (-1 if step_sequence[i - 1] == 0 else 1)
     
-    #    * For each, compute the answers to all possible queries
+    #    For each, compute the answers to all possible queries
         for start_query in range(0, chunk_size):
             for end_query in range(start_query + 1, chunk_size + 1):
                 lookup_index = tuple(step_sequence) + (start_query, end_query)
@@ -127,12 +127,12 @@ def pm_rmq_query(preprocessed_arr, start_index, end_index):
         chunk_lookup = bottom_lookup[start_chunk]
         return start_index + chunk_lookup[start_within_chunk, end_within_chunk]
     else:
-        # Start value
+        # 1. Start value
         start_lookup = bottom_lookup[start_chunk]
         argmin_start = start_index + start_lookup[start_within_chunk, -1]
         min_start = arr[argmin_start]
 
-        # End value
+        # 3. End value
         if end_within_chunk != 0:
             end_lookup = bottom_lookup[end_chunk]
             argmin_end = end_chunk * chunk_size + end_lookup[0, end_within_chunk]
@@ -141,7 +141,7 @@ def pm_rmq_query(preprocessed_arr, start_index, end_index):
             argmin_end = -1
             min_end = np.inf
 
-        # Intermediate values
+        # 2. Intermediate values
         if start_chunk + 1 != end_chunk:
             argmin_chunk = query_naive(top, top_soln, start_chunk + 1, end_chunk)
             argmin_intermediate = argmin_chunk * chunk_size + bottom_lookup[argmin_chunk][0, -1]

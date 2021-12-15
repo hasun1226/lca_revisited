@@ -26,7 +26,7 @@ def rmq_query(preprocessed_arr, start_index, end_index):
     lca = lca_query(start_node, end_node, preprocessed_tree)
     return lca.data
 
-def test_rmq():
+if __name__ == '__main__':
     arr = np.random.randint(0, 100, size = 100)
     print("Array:")
     print(arr)
@@ -38,6 +38,3 @@ def test_rmq():
             actual = rmq_query(preprocessed_arr, i, j)
             assert(expected == actual)
     print("All tests passed!")
-
-if __name__ == '__main__':
-    test_rmq()

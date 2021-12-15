@@ -1,4 +1,4 @@
-import time
+import timeit
 from pm_rmq import pm_rmq_query, pm_rmq_preprocess
 
 class Node:
@@ -19,10 +19,12 @@ def lca_preprocessing(root):
 def lca_query(node1, node2, preprocessed_tree):
     preprocessed_pm_arr, depth_arr, node_arr = preprocessed_tree
 
-    start_index = min(node1.first_visit, node2.first_visit)
-    end_index = max(node1.first_visit, node2.first_visit)
-    min_index = pm_rmq_query(preprocessed_pm_arr, start_index, end_index)
-    return node_arr[min_index]
+    if (node1.first_visit < node2.first_visit):
+        min_index = pm_rmq_query(preprocessed_pm_arr, node1.first_visit, node2.first_visit)
+        return node_arr[min_index]
+    else:
+        min_index = pm_rmq_query(preprocessed_pm_arr, node2.first_visit, node1.first_visit)
+        return node_arr[min_index]
 
 def euler_tour(curr_node, curr_depth, depth_arr, node_arr):
     if curr_node is None:
@@ -91,16 +93,20 @@ if __name__ == '__main__':
     e.left = f
     e.right = g
     d.left = h
+    #c.right = Node(25)
+    #b.right = Node(7)
 
+    start_p = timeit.default_timer()
     preprocessed_tree = lca_preprocessing(a)
-    print(preprocessed_tree)
+    end_p = timeit.default_timer()
     node = lca_query(h, c, preprocessed_tree)
+    end_q = timeit.default_timer()
     print("Example:")
-    print("LCA of {} and {}".format(h.data, c.data))
-    print("    {}".format(node.data))
+    print("LCA of {} and {} is {}".format(h.data, c.data, node.data))
+    print("preprocessing:", end_p - start_p, "\tquery:", end_q - end_p)
 
-    time1 = time.time_ns()
+    start2 = timeit.default_timer()
     r = lca_recursive(a, 1, 22)
-    time2 = time.time_ns()
+    end2 = timeit.default_timer()
     print("LCA of 1 and 22 is {}".format(r.data))
-    print(time2-time1)
+    print(end2-start2)
